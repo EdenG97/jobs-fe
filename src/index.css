@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  max-weight: 320px;
+  min-height: 100vh;
+}
+
+input {
+  @apply border border-gray-400 rounded-md px-2 py-1;
+}
+
+button {
+  @apply w-full mt-4 bg-blue-600 rounded-md text-white py-1 font-semibold hover:bg-blue-700;
+}

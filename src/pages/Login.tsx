@@ -1,10 +1,13 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormWrapper from "../components/FormWrapper";
+import LoadingSpinner from "../components/LoadngSpinner";
 import { useAuth } from "../stores/auth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const auth = useAuth();
 
   async function onSubmit(ev: FormEvent) {
@@ -17,6 +20,8 @@ export default function Login() {
     };
 
     try {
+      setErrorMessage("");
+      setLoading(true);
       const response = await fetch("http://localhost:3001/login", {
         method: "POST",
         body: JSON.stringify(request),
@@ -31,8 +36,11 @@ export default function Login() {
         auth.setTokenStorage(token);
         navigate("/", { replace: true });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log("Error in login:", error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -46,7 +54,12 @@ export default function Login() {
         <label htmlFor="password">Password</label>
         <input required type="password" name="password" />
       </div>
-      <button type="submit">Login</button>
+      {errorMessage && (
+        <p className="text-center text-red-500">{errorMessage}</p>
+      )}
+      <button type="submit" disabled={loading}>
+        {loading ? <LoadingSpinner className="!w-7 !h-7" /> : "Login"}
+      </button>
     </FormWrapper>
   );
 }

@@ -1,7 +1,3 @@
-export default function LoadingSpinner() {
-  return (
-    <div className="text-center py-4">
-      <span className="loader"></span>
-    </div>
-  );
+export default function LoadingSpinner({ className }: { className?: string }) {
+  return <span className={`loader ${className}`}></span>;
 }

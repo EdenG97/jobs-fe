@@ -84,7 +84,11 @@ export default function Home() {
     }
   }
 
-  let content = <LoadingSpinner />;
+  let content = (
+    <div className="text-center py-4">
+      <LoadingSpinner />;
+    </div>
+  );
   if (!loading) {
     content = (
       <ul className="mt-2">

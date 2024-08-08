@@ -59,7 +59,11 @@ export default function JobDetail() {
     };
   }, [id]);
 
-  let content = <LoadingSpinner />;
+  let content = (
+    <div className="text-center py-4">
+      <LoadingSpinner />;
+    </div>
+  );
   if (!loading) {
     content = (
       <>

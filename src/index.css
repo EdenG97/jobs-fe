@@ -10,7 +10,6 @@
 
 body {
   margin: 0;
-  max-weight: 320px;
   min-height: 100vh;
 }
 
@@ -19,7 +18,7 @@ input {
 }
 
 button {
-  @apply w-full mt-4 bg-blue-600 rounded-md text-white py-1 font-semibold hover:bg-blue-700;
+  @apply w-full mt-4 bg-blue-600 rounded-md text-white py-1 font-semibold h-10;
 }
 
 .loader {

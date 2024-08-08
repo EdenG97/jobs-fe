@@ -1,9 +1,12 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormWrapper from "../components/FormWrapper";
+import LoadingSpinner from "../components/LoadngSpinner";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function onSubmit(ev: FormEvent) {
     ev.preventDefault();
@@ -15,6 +18,8 @@ export default function Signup() {
     };
 
     try {
+      setErrorMessage("");
+      setLoading(true);
       const response = await fetch("http://localhost:3001/signup", {
         method: "POST",
         body: JSON.stringify(request),
@@ -26,8 +31,10 @@ export default function Signup() {
       if (response.ok) {
         navigate("/login");
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -35,13 +42,18 @@ export default function Signup() {
     <FormWrapper title="Signup" onSubmit={onSubmit}>
       <div className="flex flex-col">
         <label htmlFor="username">Username</label>
-        <input type="text" name="username" />
+        <input type="text" name="username" required />
       </div>
       <div className="flex flex-col">
         <label htmlFor="password">Password</label>
-        <input type="password" name="password" />
+        <input type="password" name="password" required />
       </div>
-      <button type="submit">Signup</button>
+      {errorMessage && (
+        <p className="text-center text-red-500">{errorMessage}</p>
+      )}
+      <button type="submit" disabled={loading}>
+        {loading ? <LoadingSpinner className="!w-7 !h-7" /> : "Signup"}
+      </button>
     </FormWrapper>
   );
 }

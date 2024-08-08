@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface IInitialState {
   token: string;
@@ -17,6 +17,27 @@ const AuthContext = createContext<IInitialState>(initialState);
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const initialValue = localStorage.getItem("token") || "";
   const [token, setToken] = useState(initialValue);
+
+  useEffect(() => {
+    if (token) {
+      async function verifyToken() {
+        try {
+          const response = await fetch("http://localhost:3001/verify-token", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            removeTokenStorage();
+          }
+        } catch (error) {
+          removeTokenStorage();
+        }
+      }
+
+      verifyToken();
+    }
+  }, [token]);
 
   function setTokenStorage(token: string) {
     localStorage.setItem("token", token);

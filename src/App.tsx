@@ -13,7 +13,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Navigation />
-        <main className="max-w-[1240px] m-auto px-4">
+        <main className="max-w-[1240px] m-auto p-4">
           <Routes>
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Jobs />} />

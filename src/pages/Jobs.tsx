@@ -6,27 +6,32 @@ import LoadingSpinner from "../components/LoadngSpinner";
 import { IJob } from "../interfaces/Job";
 import { useAuth } from "../stores/auth";
 
+const LIMIT = 2;
+
 export default function Home() {
   const auth = useAuth();
+  const [limit, setLimit] = useState(LIMIT);
+  const [moreJobs, setMoreJobs] = useState(true);
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<IJob[]>([]);
 
   useEffect(() => {
-    let init = false;
     async function getJobs() {
       try {
         setLoading(true);
-        if (!init) {
-          const response = await fetch("http://localhost:3001/jobs", {
+        const response = await fetch(
+          `http://localhost:3001/jobs?limit=${limit}`,
+          {
             headers: {
               Authorization: `Bearer ${auth.token}`,
             },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            const jobList = data.data;
-            setJobs(jobList);
           }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const jobList = data.data;
+          setMoreJobs(data.total !== jobList.length);
+          setJobs(jobList);
         }
       } catch (error) {
         console.log("Error in Jobs:", error);
@@ -36,11 +41,7 @@ export default function Home() {
     }
 
     getJobs();
-
-    return () => {
-      init = true;
-    };
-  }, []);
+  }, [limit]);
 
   async function onSearch(ev: FormEvent) {
     ev.preventDefault();
@@ -87,6 +88,10 @@ export default function Home() {
 
   function getFormattedDate(date: string) {
     return formatDistanceToNow(new Date(date), { addSuffix: true });
+  }
+
+  function morePage() {
+    setLimit(limit + LIMIT);
   }
 
   let content = (
@@ -165,6 +170,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold">Job List</h1>
         {content}
       </JobContainer>
+      {moreJobs && <button onClick={morePage}>More Jobs</button>}
     </div>
   );
 }

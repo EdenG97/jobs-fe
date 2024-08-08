@@ -41,7 +41,6 @@ export default function JobDetail() {
           if (response.ok) {
             const data = await response.json();
             const jobDetail = data.data;
-            console.log(jobDetail);
             setJobDetail(jobDetail);
           }
         }

@@ -14,13 +14,35 @@ export default function Home() {
   const [moreJobs, setMoreJobs] = useState(true);
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<IJob[]>([]);
+  const [searchQueryParams, setSearchQueryParams] = useState({
+    location: "",
+    description: "",
+    fulltime: "",
+    limit: LIMIT,
+  });
 
   useEffect(() => {
     async function getJobs() {
       try {
         setLoading(true);
+
+        const queryParams = new URLSearchParams();
+        if (searchQueryParams.description) {
+          queryParams.append("description", searchQueryParams.description);
+        }
+
+        if (searchQueryParams.location) {
+          queryParams.append("location", searchQueryParams.location);
+        }
+
+        if (searchQueryParams.fulltime) {
+          queryParams.append("fulltime", searchQueryParams.fulltime);
+        }
+
+        queryParams.append("limit", searchQueryParams.limit.toString());
+
         const response = await fetch(
-          `http://localhost:3001/jobs?limit=${limit}`,
+          `http://localhost:3001/jobs?${queryParams}`,
           {
             headers: {
               Authorization: `Bearer ${auth.token}`,
@@ -41,7 +63,7 @@ export default function Home() {
     }
 
     getJobs();
-  }, [limit]);
+  }, [searchQueryParams]);
 
   async function onSearch(ev: FormEvent) {
     ev.preventDefault();
@@ -51,39 +73,12 @@ export default function Home() {
     const location = form.get("location") as string;
     const fulltime = form.get("fulltime") as string;
 
-    const queryParams = new URLSearchParams();
-    if (description) {
-      queryParams.append("description", description);
-    }
-
-    if (location) {
-      queryParams.append("location", location);
-    }
-
-    if (fulltime) {
-      queryParams.append("fulltime", fulltime);
-    }
-
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `http://localhost:3001/jobs?${queryParams}`,
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token}`,
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const jobsList = data.data;
-        setJobs(jobsList);
-      }
-    } catch (error) {
-      console.log("Error in Jobs:", error);
-    } finally {
-      setLoading(false);
-    }
+    setSearchQueryParams(() => ({
+      location,
+      description,
+      fulltime,
+      limit: LIMIT,
+    }));
   }
 
   function getFormattedDate(date: string) {
@@ -92,6 +87,7 @@ export default function Home() {
 
   function morePage() {
     setLimit(limit + LIMIT);
+    setSearchQueryParams((prev) => ({ ...prev, limit: limit + LIMIT }));
   }
 
   let content = (
@@ -159,7 +155,7 @@ export default function Home() {
           />
         </div>
         <div className="flex gap-2">
-          <input type="checkbox" name="fulltime" value="Y" />
+          <input type="checkbox" name="fulltime" value="fulltime" />
           <label htmlFor="fulltime">Full Time Only</label>
         </div>
         <button type="submit" className="w-[100px]">

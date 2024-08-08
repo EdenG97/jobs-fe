@@ -30,6 +30,9 @@ export default function Signup() {
 
       if (response.ok) {
         navigate("/login");
+      } else {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.error);
       }
     } catch (error: any) {
       setErrorMessage(error.message);

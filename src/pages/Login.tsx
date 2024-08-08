@@ -35,6 +35,9 @@ export default function Login() {
         const token = data.data.token;
         auth.setTokenStorage(token);
         navigate("/", { replace: true });
+      } else {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.error);
       }
     } catch (error: any) {
       console.log("Error in login:", error);

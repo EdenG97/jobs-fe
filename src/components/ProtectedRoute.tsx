@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../stores/auth";
+import LoadingSpinner from "./LoadngSpinner";
 
 export default function ProtectedRoute() {
   const auth = useAuth();
@@ -18,7 +19,11 @@ export default function ProtectedRoute() {
   }, [token, navigate]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="text-center py-4">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return <Outlet />;

@@ -1,3 +1,4 @@
+import { formatDistanceToNow } from "date-fns";
 import { FormEvent, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import JobContainer from "../components/JobContainer";
@@ -84,35 +85,47 @@ export default function Home() {
     }
   }
 
+  function getFormattedDate(date: string) {
+    return formatDistanceToNow(new Date(date), { addSuffix: true });
+  }
+
   let content = (
     <div className="text-center py-4">
       <LoadingSpinner />;
     </div>
   );
   if (!loading) {
-    content = (
-      <ul className="mt-2">
-        {jobs.map((job) => (
-          <li key={job.id} className="flex justify-between border-t-2 py-2">
-            <div>
-              <NavLink
-                to={`/detail/${job.id}`}
-                className="text-blue-700 font-bold text-xl">
-                {job.title}
-              </NavLink>
-              <p className="text-gray-500">
-                {job.company}:&nbsp;
-                <span className="text-green-800 font-bold">{job.type}</span>
-              </p>
-            </div>
-            <div className="text-end text-gray-500 [&>*:first-child]:font-bold">
-              <p>{job.location}</p>
-              <p>{job.created_at}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    );
+    if (jobs.length === 0) {
+      content = (
+        <div className="text-center py-4 text-2xl font-semibold">
+          Jobs Not Found!
+        </div>
+      );
+    } else {
+      content = (
+        <ul className="mt-2">
+          {jobs.map((job) => (
+            <li key={job.id} className="flex justify-between border-t-2 py-2">
+              <div>
+                <NavLink
+                  to={`/detail/${job.id}`}
+                  className="text-blue-700 font-bold text-xl">
+                  {job.title}
+                </NavLink>
+                <p className="text-gray-500">
+                  {job.company}:&nbsp;
+                  <span className="text-green-800 font-bold">{job.type}</span>
+                </p>
+              </div>
+              <div className="text-end text-gray-500 [&>*:first-child]:font-bold">
+                <p>{job.location}</p>
+                <p>{getFormattedDate(job.created_at)}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      );
+    }
   }
 
   return (
